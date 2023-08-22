@@ -1,0 +1,107 @@
+select * from table_admin
+
+select * from table_person
+
+create table table_person
+(
+per_id int identity primary key,
+per_name varchar(20) not null,
+per_phone varchar(20) not null,
+per_gender varchar(6) not null,
+per_address varchar(100) not null,
+per_bloodtype varchar(10) not null,
+per_dob date not null,
+per_ad_fk_id int foreign key references table_admin(a_id)
+)
+
+create proc add_person
+(
+@per_name varchar(20),
+@per_phone varchar(20),
+@per_gender varchar(6),
+@per_address varchar(100),
+@per_bloodtype varchar(10),
+@per_dob date ,
+@per_ad_fk_id int 
+
+)
+as 
+begin
+insert into table_person(per_name,per_phone,per_gender,per_address,per_bloodtype,per_dob,per_ad_fk_id)
+values(@per_name,@per_phone,@per_gender,@per_address,@per_bloodtype,@per_dob,@per_ad_fk_id)
+end
+
+execute add_person 'Ahmed','0325668945','Male','North Karachi Block C','O+','1-5-1999',1
+
+select * from table_person
+
+create table table_recive 
+(
+r_id int primary key identity,
+r_date date not null,
+r_hospital nvarchar(50)not null,
+r_quantity int not null,
+r_pid_fk int foreign key references table_person(per_id)
+);
+
+drop table table_recive
+
+
+
+create table table_stock
+(
+st_id int primary key identity,
+st_Blood_group varchar(20) not null,
+st_quantity int not null,
+st_rec_fk_id int foreign key references table_person(per_id)
+)
+
+create proc add_stock 
+(
+@st_Blood_group varchar(20) ,
+@st_quantity int,
+@st_rec_fk_id int 
+)
+
+as
+begin
+insert into table_stock(st_blood_group,st_quantity,st_rec_fk_id) values (@st_blood_group,@st_quantity,@st_rec_fk_id)
+end
+
+execute add_stock 'A+',2,1
+
+select * from table_stock
+select * from table_recive
+
+select r_hospital,r_quantity,per_bloodtype,per_name from table_recive inner join table_person on per_id = r_pid_fk
+
+
+create proc update_person
+(
+@per_id int ,
+@per_name varchar(20),
+@per_phone varchar(20),
+@per_gender varchar(6),
+@per_address varchar(100) ,
+@per_bloodtype varchar(10),
+@per_dob date
+)
+as 
+begin
+update table_person
+set per_name=@per_name,per_phone=@per_phone,per_gender=@per_gender,per_address=@per_address,per_bloodtype=@per_bloodtype,per_dob=@per_dob where per_id=@per_id
+end
+
+
+select * from table_person
+
+create proc delete_person
+(
+@per_id int
+)
+
+as
+begin
+delete from table_person where per_id=@per_id
+
+end
